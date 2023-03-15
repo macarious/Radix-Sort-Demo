@@ -11,7 +11,6 @@ ZHANG, Yufei
 
 from tkinter import Tk
 from demo import Demo
-from element import Element
 
 def main():
     '''
@@ -19,11 +18,8 @@ def main():
     '''
 
     # Sample array
-    array_values = [900590, 819581, 721572, 638563, 542554, 457545, 363536, 257, 81, 5]
-    array = []
-    for value in array_values:
-        array.append(Element(value))
-
+    array = [900590, 819581, 721572, 638563, 542554, 457545, 363536, 257, 81, 5]
+    
     # Run demo
     root = Tk()
     Demo(root, array)

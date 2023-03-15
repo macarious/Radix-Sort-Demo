@@ -2,15 +2,15 @@
 CS 5008 - Radix Sort Demonstration
 
 Demonstration of Radix Sort
-Radix Sort Algorithm -- logic of radix sort
+Logic of radix sort algorithm
 
 HUI, Macarious Kin Fung
 LI, Yunke
 ZHANG, Yufei
 '''
 
-from element import BASE
-from element import Element
+RADIX = 10
+from element import get_power
 
 def find_max_power(array):
     '''
@@ -26,8 +26,8 @@ def find_max_power(array):
     Returns:
         int, maximum power (0, 1, 2, etc.)
     '''
-    max_digit = max(map(Element.get_digit_count, array))
-    return (max_digit - 1)
+    max_digit = max(map(lambda element: get_power(element, RADIX), array))
+    return (max_digit)
     
 
 def counting_sort(array, place_value):
@@ -51,18 +51,18 @@ def counting_sort(array, place_value):
     list_digit_counter = [0] * length # List to count the occurence of each digit
 
     # Count the number of occurences of each digit
-    for i in range(length):
-        digit = (array[i].value // place_value) % BASE
+    for element in array:
+        digit = (element // place_value) % RADIX
         list_digit_counter[digit] += 1
 
     # Calculate the cumulative count, which is equivalent to the position of the digit
     # in the sorted array
-    for i in range(1, BASE):
+    for i in range(1, RADIX):
         list_digit_counter[i] += list_digit_counter[i - 1]
 
     # Construct the sorted array in reverse
     for i in range(length - 1, -1, -1):
-        digit = (array[i].value // place_value) % BASE
+        digit = (array[i] // place_value) % RADIX
         list_sorted[list_digit_counter[digit] - 1] = array[i]
         list_digit_counter[digit] -= 1
 
