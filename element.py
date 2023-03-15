@@ -53,6 +53,23 @@ class Element:
         self.colour = COLOUR[digit]
 
 
+    def get_value(self):
+        '''
+        Function Name: get_value
+            Get the value of the element
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            int, value of element
+        '''
+        return self.value
+
+
     def get_digit(self, place_value):
         '''
         Function Name: get_digit
