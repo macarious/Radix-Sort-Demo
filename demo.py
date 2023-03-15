@@ -85,6 +85,7 @@ class Demo:
         # Set properties of demo window
         self.root.title(TITLE)
         self.root.configure(bg = BACKGROUND_COLOUR)
+        self.root.resizable(False, False)
         self.build_control_frame()
         self.build_display_frame()
 
@@ -139,11 +140,17 @@ class Demo:
         # Create a frame for the initial array
         self.display_frame = tkinter.Frame(self.root, **CONFIG_FRAME)
         self.display_frame.grid(column = 0, row = 1, **CONFIG_GRID)
-        self.steps_frame = tkinter.Frame(self.display_frame, **CONFIG_FRAME)
-        self.steps_frame.grid(column = 0, row = 0, **CONFIG_GRID)
-        self.display_scrollbar = tkinter.Scrollbar(self.display_frame, orient = 'vertical')
-        self.display_scrollbar.grid(column = 1, row = 0, sticky = 'ns')
+        self.steps_canvas = tkinter.Canvas(self.display_frame, **CONFIG_FRAME)
+        self.steps_canvas.pack(side = 'left', fill = 'y')
+        self.display_scrollbar = tkinter.Scrollbar(self.display_frame, orient = 'vertical', command = self.steps_canvas.yview)
+        self.display_scrollbar.pack(side = 'right', fill = 'y')
         self.build_individual_step_frame()
+        width = self.display_frame.winfo_screenwidth()
+        height = self.display_frame.winfo_screenheight()
+        print(width)
+        print(height)
+        self.steps_canvas.config(scrollregion = (0, 0, width, height * len(str(VALUE_MAX))), height = height * 5, width = width)
+        self.steps_canvas.config(yscrollcommand = self.display_scrollbar.set)
 
 
     def build_individual_step_frame(self):
@@ -161,7 +168,7 @@ class Demo:
             Nothing
         '''
         # Create a frame for the initial array
-        individual_step_frame = tkinter.Frame(self.steps_frame, **CONFIG_FRAME)
+        individual_step_frame = tkinter.Frame(self.steps_canvas, **CONFIG_FRAME)
         individual_step_frame.grid(column = 0, row = self.step, **CONFIG_GRID)
 
         # Create labels for displaying headers
@@ -200,24 +207,9 @@ class Demo:
         # Overwrite existing array
         self.array = array
         self.step = 0
-        self.destroy_children(self.display_frame)
+        self.display_frame.destroy()
         self.build_display_frame()
         self.button_next.config(state = 'normal')
-
-
-    def destroy_children(self, parent):
-        '''
-        Function Name: destroy_children
-            Destroy all child widgets from parent
-        
-        Parameters:
-        
-        Raises:
-        
-        Returns:
-        '''
-        for child in parent.winfo_children():
-            child.destroy()
 
 
     def draw_array(self, canvas):
