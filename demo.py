@@ -21,6 +21,8 @@ VALUE_MAX = 999999
 ELEMENT_COUNT = 10
 
 # For demonstration
+TITLE = 'CS 5008 - Radix Sort Demo'
+BACKGROUND_COLOUR = 'gray20'
 ELEMENT_WIDTH = 80
 ELEMENT_HEIGHT = 40
 GAP = 0.20 * ELEMENT_WIDTH
@@ -53,8 +55,6 @@ CONFIG_HEADER = {
     'font' : ('Calibri', 16),
     'foreground' : 'white',
 }
-WINDOW_WIDTH = 640
-WINDOW_HEIGHT = 480
 
 class Demo:
     '''
@@ -83,32 +83,15 @@ class Demo:
         self.max_power = radix_sort.find_max_power(self.array)
         
         # Set properties of demo window
-        self.root.title('CS 5008 - Radix Sort Demo')
-        self.root.configure(bg = 'gray20')
-        self.build_window()
+        self.root.title(TITLE)
+        self.root.configure(bg = BACKGROUND_COLOUR)
+        self.build_control_frame()
+        self.build_display_frame()
 
 
-    def build_window(self):
+    def build_control_frame(self):
         '''
-        Function Name: build_window
-            Build the application window for a graphical user interface
-        
-        Parameters:
-            Nothing
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            None
-        '''
-        self.build_button_frame()
-        self.build_steps_frame()
-
-
-    def build_button_frame(self):
-        '''
-        Function Name: build_button_frame
+        Function Name: build_control_frame
             Build a frame which contains buttons for navigation
         
         Parameters:
@@ -121,27 +104,27 @@ class Demo:
             Nothing
         '''
         # Create a frame for the buttons
-        self.buttons_frame = tkinter.Frame(self.root, **CONFIG_FRAME)
-        self.buttons_frame.grid(column = 0, row = 0, **CONFIG_GRID)
+        self.control_frame = tkinter.Frame(self.root, **CONFIG_FRAME)
+        self.control_frame.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create buttons to generate a new array
-        self.button_generate = tkinter.Button(self.buttons_frame,
+        self.button_generate = tkinter.Button(self.control_frame,
                                            text = 'GENERATE NEW ARRAY',
                                            command = self.generate_new_array,
                                            state = 'normal')
         self.button_generate.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create buttons to continue to next step
-        self.button_next = tkinter.Button(self.buttons_frame,
+        self.button_next = tkinter.Button(self.control_frame,
                                            text = 'NEXT STEP',
                                            command = self.continue_radix_sort,
                                            state = 'normal')
         self.button_next.grid(column = 1, row = 0, **CONFIG_GRID)
 
 
-    def build_steps_frame(self):
+    def build_display_frame(self):
         '''
-        Function Name: build_steps_frame
+        Function Name: build_display_frame
             Build a frame which contains all the steps in the demo
         
         Parameters:
@@ -154,8 +137,12 @@ class Demo:
             Nothing
         '''
         # Create a frame for the initial array
-        self.steps_frame = tkinter.Frame(self.root, **CONFIG_FRAME)
-        self.steps_frame.grid(column = 0, row = (self.step + 1), **CONFIG_GRID)
+        self.display_frame = tkinter.Frame(self.root, **CONFIG_FRAME)
+        self.display_frame.grid(column = 0, row = 1, **CONFIG_GRID)
+        self.steps_frame = tkinter.Frame(self.display_frame, **CONFIG_FRAME)
+        self.steps_frame.grid(column = 0, row = 0, **CONFIG_GRID)
+        self.display_scrollbar = tkinter.Scrollbar(self.display_frame, orient = 'vertical')
+        self.display_scrollbar.grid(column = 1, row = 0, sticky = 'ns')
         self.build_individual_step_frame()
 
 
@@ -174,17 +161,17 @@ class Demo:
             Nothing
         '''
         # Create a frame for the initial array
-        self.individual_step_frame = tkinter.Frame(self.steps_frame, **CONFIG_FRAME)
-        self.individual_step_frame.grid(column = 0, row = (self.step + 1), **CONFIG_GRID)
+        individual_step_frame = tkinter.Frame(self.steps_frame, **CONFIG_FRAME)
+        individual_step_frame.grid(column = 0, row = self.step, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        label_individual_step = ttk.Label(self.individual_step_frame, text = f"Array at Step {self.step}", **CONFIG_HEADER)
+        label_individual_step = ttk.Label(individual_step_frame, text = f"Array at Step {self.step}", **CONFIG_HEADER)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create canvas widget to draw the array
         width = ELEMENT_COUNT * (GAP + ELEMENT_WIDTH) + GAP
         height = ELEMENT_HEIGHT + 2 * GAP
-        canvas_individual_step = tkinter.Canvas(self.individual_step_frame, width = width, height = height, **CONFIG_CANVAS)
+        canvas_individual_step = tkinter.Canvas(individual_step_frame, width = width, height = height, **CONFIG_CANVAS)
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
@@ -206,16 +193,16 @@ class Demo:
             Nothing
         '''
         array = []
-        for i in range(ELEMENT_COUNT):
+        for _ in range(ELEMENT_COUNT):
             new_element = Element(randint(VALUE_MIN, VALUE_MAX))
             array.append(new_element)
             
         # Overwrite existing array
         self.array = array
         self.step = 0
-        self.destroy_children(self.steps_frame)
-        self.build_steps_frame()
-        self.button_next.config('normal')
+        self.destroy_children(self.display_frame)
+        self.build_display_frame()
+        self.button_next.config(state = 'normal')
 
 
     def destroy_children(self, parent):
@@ -265,11 +252,24 @@ class Demo:
 
     
     def continue_radix_sort(self):
+        '''
+        Function Name: continue_radix_sort
+            Execute and display one more step of radix sort
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
         power = self.step
         self.step += 1
         place_value = 10 ** power
         self.array = radix_sort.counting_sort(self.array, place_value)
-        self.build_steps_frame()
+        self.build_individual_step_frame()
     
         if self.step > self.max_power:
             self.button_next.config(state = 'disabled')
