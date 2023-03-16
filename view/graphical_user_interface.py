@@ -11,12 +11,8 @@ ZHANG, Yufei
 
 import tkinter
 from tkinter import ttk
-from random import randint
-from element import get_digit
-from radix_sort import RADIX
-from radix_sort import counting_sort
-from radix_sort import find_max_power
 
+from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
@@ -75,19 +71,21 @@ CONFIG_GRID = {
     'pady' : 2,
 }
 
+
 class GraphicalUserInterface:
     '''
     This class provides a graphical interface for a demonstration of radix sort.
     '''
 
-    def __init__(self, root, array):
+    def __init__(self, root, controller, radix_sort):
         '''
         Function Name: __init__
             Constructor for the GraphicalUserInterface class.
         
         Parameters:
             root -- Tk, root node for tkinter
-            array -- list of integers
+            controller -- Controller, the controller of the demo
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -96,21 +94,17 @@ class GraphicalUserInterface:
             Nothing
         '''
         self.root = root
-        self.array = array
-        self.step_count = 0
-        self.max_power = find_max_power(self.array)
-        self.element_count = len(array)
-
-        self.build_gui_window()
+        self.controller = controller
+        self.build_gui_window(radix_sort)
 
 
-    def build_gui_window(self):
+    def build_gui_window(self, radix_sort):
         '''
         Function Name: build_gui_window
             Building the GUI window.
         
         Parameters:
-            None
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -121,13 +115,83 @@ class GraphicalUserInterface:
         self.root.title(TITLE)
         self.root.configure(bg = BACKGROUND_COLOUR)
         self.root.resizable(False, False)
-        self.build_control_container()
-        self.build_display_container()
+        self._build_control_container()
+        self._build_display_container(radix_sort)
 
 
-    def build_control_container(self):
+    def reset_display_container(self, radix_sort):
         '''
-        Function Name: build_control_container
+        Function Name: reset_display_container
+            Resets the display container and display a new array
+        
+        Parameters:
+            radix_sort -- RadixSort, algorithm being demonstrated
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.display_container.destroy()
+        self._build_display_container(radix_sort)
+        self.enable_next_button()
+
+
+    def display_step(self, radix_sort):
+        '''
+        Function Name: show_intermediate_step
+            Display an intermediate step
+        
+        Parameters:
+            radix_sort -- RadixSort, algorithm being demonstrated
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self._build_individual_step_frame(radix_sort)
+
+    
+    def enable_next_button(self):
+        '''
+        Function Name: disable_next_button
+            Enable the 'Next Step' button
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.button_next.config(state = 'normal')
+
+    
+    def disable_next_button(self):
+        '''
+        Function Name: disable_next_button
+            Disable the 'Next Step' button
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.button_next.config(state = 'disabled')
+
+
+    def _build_control_container(self):
+        '''
+        Function Name: _build_control_container
             Build a container which contains buttons for navigation
         
         Parameters:
@@ -146,25 +210,25 @@ class GraphicalUserInterface:
         # Create buttons to generate a new array
         self.button_generate = tkinter.Button(self.control_container,
                                            text = 'GENERATE NEW ARRAY',
-                                           command = self.generate_new_array,
+                                           command = self.controller.generate_new_array,
                                            state = 'normal')
         self.button_generate.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create buttons to continue to next step
         self.button_next = tkinter.Button(self.control_container,
                                            text = 'NEXT STEP',
-                                           command = self.continue_radix_sort,
+                                           command = self.controller.continue_radix_sort,
                                            state = 'normal')
         self.button_next.grid(column = 1, row = 0, **CONFIG_GRID)
 
 
-    def build_display_container(self):
+    def _build_display_container(self, radix_sort):
         '''
-        Function Name: build_display_container
+        Function Name: _build_display_container
             Build a container which contains all the steps in the demo
         
         Parameters:
-            None
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -177,16 +241,16 @@ class GraphicalUserInterface:
         self.display_container.grid(column = 0, row = 1, **CONFIG_GRID)
         self.step_counts_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME)
         self.step_counts_canvas.pack(side = 'left', fill = 'y')
-        self.build_individual_step_frame()
+        self._build_individual_step_frame(radix_sort)
 
 
-    def build_individual_step_frame(self):
+    def _build_individual_step_frame(self, radix_sort):
         '''
         Function Name: build_step_frame
             Build a frame which displays the current step
         
         Parameters:
-            None
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -194,47 +258,49 @@ class GraphicalUserInterface:
         Returns:
             Nothing
         '''
-        # Fix size of steps_canvas and add scrollbar
-        # Currently doesn't work
-        if self.step_count == 4:
-            self.fix_steps_canvas_size()
+        step_count = radix_sort.get_step_count()
+        max_power = radix_sort.get_max_power()
+        element_count = radix_sort.get_element_count()
+        is_sorted = radix_sort.is_sorted()
+        
+        if step_count == 4:
+            self._fix_steps_canvas_size()
 
         # Create a frame for an individual step
         individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
-        individual_step_frame.grid(column = 0, row = self.step_count, **CONFIG_GRID)
+        individual_step_frame.grid(column = 0, row = step_count, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        if self.step_count == 0:
+        if step_count == 0:
             header = "Original Array"
             font_colour = THEME_COLOUR['original']
-        elif self.is_sorted():
+        
+        elif is_sorted:
             header = "Sorted Array"
             font_colour = THEME_COLOUR['sorted']
+
         else:
-            header = f"Array at Step {self.step_count}"
+            header = f"Array at Step {step_count}"
             font_colour = THEME_COLOUR['plain']
 
         label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create canvas widget to draw the array
-        width = self.element_count * (GAP_HORIZONTAL + ELEMENT_WIDTH_PER_DIGIT * (self.max_power + 1)) + GAP_HORIZONTAL
+        width = element_count * (GAP_HORIZONTAL + ELEMENT_WIDTH_PER_DIGIT * (max_power + 1)) + GAP_HORIZONTAL
         height = ELEMENT_HEIGHT + 2 * GAP_VERTICAL
         canvas_individual_step = tkinter.Canvas(individual_step_frame, width = width, height = height, **CONFIG_CANVAS)
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if (self.step_count == 0) or self.is_sorted():
-            self.display_array(canvas_individual_step)
+        if step_count == 0 or is_sorted:
+            self._draw_array(canvas_individual_step, radix_sort)
 
         else:
-            self.display_array_detail(canvas_individual_step)
-            if self.is_sorted():
-                self.step_count += 1
-                self.build_individual_step_frame()
+            self._draw_array_detail(canvas_individual_step, radix_sort)
 
 
-    def fix_steps_canvas_size(self):
+    def _fix_steps_canvas_size(self):
         # width = self.step_counts_canvas.winfo_width()
         # height = self.step_counts_canvas.winfo_height()
         # print(width)
@@ -247,13 +313,14 @@ class GraphicalUserInterface:
         pass
 
 
-    def display_array(self, canvas):
+    def _draw_array(self, canvas, radix_sort):
         '''
-        Function Name: display_array
+        Function Name: _draw_array
             Display the array on canvas
         
         Parameters:
             canvas -- Canvas, widget in tkinter use to display the array
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -262,11 +329,12 @@ class GraphicalUserInterface:
             Nothing
         '''
         current_position = GAP_HORIZONTAL # pixels, horizontal distance to left edge
-        for element in self.array:
-            width = ELEMENT_WIDTH_PER_DIGIT * (self.max_power + 1)
+        for element in radix_sort.get_array():
+            width = ELEMENT_WIDTH_PER_DIGIT * (radix_sort.max_power + 1)
             label = element
-            self.draw_rectangle_with_label(
+            self._draw_rectangle_with_label(
                 canvas = canvas,
+                radix_sort = radix_sort,
                 horizontal_pos = current_position,
                 vertical_pos = GAP_VERTICAL,
                 width = width,
@@ -276,13 +344,14 @@ class GraphicalUserInterface:
             current_position += width + GAP_HORIZONTAL
 
     
-    def display_array_detail(self, canvas):
+    def _draw_array_detail(self, canvas, radix_sort):
         '''
-        Function Name: display_array_detail
+        Function Name: _draw_array_detail
             Display the array with highlighed digits on canvas
         
         Parameters:
             canvas -- Canvas, widget in tkinter use to display the array
+            radix_sort -- RadixSort, algorithm being demonstrated
         
         Raises:
             Nothing
@@ -291,16 +360,17 @@ class GraphicalUserInterface:
             Nothing
         '''
         current_position = GAP_HORIZONTAL # pixels, horizontal distance to left edge
-        for element in self.array:
-            for power in range(self.max_power, -1, -1):
+        for element in radix_sort.get_array():
+            for power in range(radix_sort.get_max_power(), -1, -1):
                 width = ELEMENT_WIDTH_PER_DIGIT
-                label = get_digit(element, 10 ** (power), RADIX)
+                label = get_digit(element, 10 ** (power), radix_sort.get_radix())
                 label_parameters = {'highlighted' : False}
-                if (power + 1 == self.step_count):
+                if (power + 1 == radix_sort.get_step_count()):
                     label_parameters['highlighted'] = True
                     label_parameters['background_colour'] = DIGIT_HIGHLIGHT[label]
-                self.draw_rectangle_with_label(
-                    canvas = canvas, 
+                self._draw_rectangle_with_label(
+                    canvas = canvas,
+                    radix_sort = radix_sort,
                     horizontal_pos = current_position,
                     vertical_pos = GAP_VERTICAL,
                     width = width,
@@ -312,23 +382,14 @@ class GraphicalUserInterface:
             current_position += GAP_HORIZONTAL
 
 
-    def display_new_array(self, array):
-        self.array = new_array
-        self.step_count = 0
-        self.max_power = find_max_power(self.array)
-        self.display_container.destroy()
-        self.build_display_container()
-        self.button_next.config(state = 'normal')
-
-            
-
-    def draw_rectangle_with_label(self, canvas, horizontal_pos, vertical_pos, width, height, label, **parameters):
+    def _draw_rectangle_with_label(self, canvas, radix_sort, horizontal_pos, vertical_pos, width, height, label, **parameters):
         '''
-        Function Name: draw_rectangle_with_label
+        Function Name: _draw_rectangle_with_label
             Draw a rectangle with a label on a given canvas with various parameters
         
         Parameters:
             canvas -- canvas, the canvas on which the rectangle to be drawn
+            radix_sort -- RadixSort, radix sort algorithm used in the demonstration
             horizontal_pos -- int, horizontal position of the top-left corner of rectangle
             vertical_pos -- int, vertical position of the top-left corner of rectangle
             width -- int, width of rectangle
@@ -343,10 +404,10 @@ class GraphicalUserInterface:
         '''
         # List of optional parameters and default value:
         highlighted = False
-        if self.step_count == 0:
+        if radix_sort.get_step_count() == 0:
             config_rect = CONFIG_RECT['original']
             config_text = CONFIG_TEXT['original']
-        elif self.is_sorted():
+        elif radix_sort.is_sorted():
             config_rect = CONFIG_RECT['sorted']
             config_text = CONFIG_TEXT['sorted']
         else:
@@ -360,7 +421,7 @@ class GraphicalUserInterface:
             elif parameter == 'background_colour':
                 background_colour = value
             else:
-                raise NameError("Unknown parameter in draw_rectangle_with_label().")
+                raise NameError("Unknown parameter in _draw_rectangle_with_label().")
 
         if highlighted:
             config_rect = CONFIG_RECT['highlighted'].copy()

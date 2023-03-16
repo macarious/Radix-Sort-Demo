@@ -1,8 +1,7 @@
 '''
 CS 5008 - Radix Sort Demonstration
-
-Demonstration of Radix Sort
-Driver File -- Demonstrate the Radix Sort algorithm with a sample array to sort.
+----------------------------------
+main -- Driver file running the Radix Sort Demo
 
 HUI, Macarious Kin Fung
 LI, Yunke
@@ -10,7 +9,7 @@ ZHANG, Yufei
 '''
 
 from tkinter import Tk
-from demo import Demo
+from controller.demo import Demo
 
 def main():
     '''
