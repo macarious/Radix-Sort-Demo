@@ -34,26 +34,35 @@ CONFIG_CANVAS = {
     'highlightthickness' : 0,
     'background' : 'gray40',
 }
-ELEMENT_BACKGROUND_COLOUR = 'grey20'
-CONFIG_DIGIT_TEXT_PLAIN = {
-    'fill' : 'grey20',
-    'font' : ('Calibri', 12),
+THEME_COLOUR = {
+    'original' : 'tomato',
+    'sorted' : 'SeaGreen1',
+    'plain' : 'gray20',
+    'highlighted' : 'gray90',
 }
-CONFIG_DIGIT_TEXT_HIGHLIGHT = {
-    'fill' : 'white',
-    'font' : ('Calibri', 12, 'bold'),
+CONFIG_FRAME = {
+    'background' : 'gray40',
+    'highlightthickness' : 1,
+    'highlightcolor' : 'white',
 }
-CONFIG_DIGIT_RECT_PLAIN = {
-    'fill' : 'grey50',
-    'outline' : 'black',
-    'width' : 1,
+CONFIG_HEADER = {
+    'anchor' : 'w',
+    'background' : 'gray40',
+    'font' : ('Calibri', 16, 'bold'),
 }
-CONFIG_DIGIT_RECT_HIGHLIGHT = {
-    'fill' : 'grey60',
-    'outline' : 'blue',
-    'width' : 1,
+CONFIG_TEXT = {
+    'original' : {'fill' : THEME_COLOUR['original'], 'font' : ('Calibri', 14, 'bold'),},
+    'sorted' : {'fill' : THEME_COLOUR['sorted'], 'font' : ('Calibri', 14, 'bold'),},
+    'plain' : {'fill' : THEME_COLOUR['plain'], 'font' : ('Calibri', 14, 'bold'),},
+    'highlighted' : {'fill' : THEME_COLOUR['highlighted'], 'font' : ('Calibri', 14, 'bold'),},
 }
-DIGIT_COLOUR = [
+CONFIG_RECT = {
+    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray30', 'width' : '2',},
+    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray30', 'width' : '2',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray50', 'width' : '1',},
+    'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
+}
+DIGIT_HIGHLIGHT = [
     'red2',
     'azure4',
     'magenta4',
@@ -69,17 +78,6 @@ CONFIG_GRID = {
     'sticky' : 'nsew',
     'padx' : 2,
     'pady' : 2,
-}
-CONFIG_FRAME = {
-    'background' : 'gray40',
-    'highlightthickness' : 1,
-    'highlightcolor' : 'white',
-}
-CONFIG_HEADER = {
-    'anchor' : 'w',
-    'background' : 'gray40',
-    'font' : ('Calibri', 16),
-    'foreground' : 'white',
 }
 
 class Demo:
@@ -104,7 +102,7 @@ class Demo:
         '''
         self.root = root
         self.array = array
-        self.step = 0
+        self.step_count = 0
         self.max_power = find_max_power(self.array)
         
         # Set properties of demo window
@@ -165,8 +163,8 @@ class Demo:
         # Create a frame for the initial array
         self.display_container = tkinter.Frame(self.root, **CONFIG_FRAME)
         self.display_container.grid(column = 0, row = 1, **CONFIG_GRID)
-        self.steps_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME)
-        self.steps_canvas.pack(side = 'left', fill = 'y')
+        self.step_counts_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME)
+        self.step_counts_canvas.pack(side = 'left', fill = 'y')
         self.build_individual_step_frame()
 
 
@@ -186,15 +184,25 @@ class Demo:
         '''
         # Fix size of steps_canvas and add scrollbar
         # Currently doesn't work
-        if self.step == 4:
+        if self.step_count == 4:
             self.fix_steps_canvas_size()
 
         # Create a frame for an individual step
-        individual_step_frame = tkinter.Frame(self.steps_canvas, **CONFIG_FRAME)
-        individual_step_frame.grid(column = 0, row = self.step, **CONFIG_GRID)
+        individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
+        individual_step_frame.grid(column = 0, row = self.step_count, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        label_individual_step = ttk.Label(individual_step_frame, text = f"Array at Step {self.step}", **CONFIG_HEADER)
+        if self.step_count == 0:
+            header = "Original Array"
+            font_colour = THEME_COLOUR['original']
+        elif self.is_sorted():
+            header = "Sorted Array"
+            font_colour = THEME_COLOUR['sorted']
+        else:
+            header = f"Array at Step {self.step_count}"
+            font_colour = THEME_COLOUR['plain']
+
+        label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create canvas widget to draw the array
@@ -204,26 +212,26 @@ class Demo:
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if (self.step == 0) or (self.step > self.max_power + 1):
+        if (self.step_count == 0) or self.is_sorted():
             self.display_array(canvas_individual_step)
 
         else:
             self.display_array_detail(canvas_individual_step)
-            if (self.step == (self.max_power + 1)):
-                self.step += 1
+            if self.is_sorted():
+                self.step_count += 1
                 self.build_individual_step_frame()
 
 
     def fix_steps_canvas_size(self):
-        # width = self.steps_canvas.winfo_width()
-        # height = self.steps_canvas.winfo_height()
+        # width = self.step_counts_canvas.winfo_width()
+        # height = self.step_counts_canvas.winfo_height()
         # print(width)
         # print(height)
-        # self.steps_canvas.config(width = width, height = height)
-        # self.steps_canvas.update()
-        # self.display_scrollbar = tkinter.Scrollbar(self.display_container, orient = 'vertical', command = self.steps_canvas.yview)
+        # self.step_counts_canvas.config(width = width, height = height)
+        # self.step_counts_canvas.update()
+        # self.display_scrollbar = tkinter.Scrollbar(self.display_container, orient = 'vertical', command = self.step_counts_canvas.yview)
         # self.display_scrollbar.pack(side = 'right', fill = 'y')
-        # self.steps_canvas.config(yscrollcommand = self.display_scrollbar.set)
+        # self.step_counts_canvas.config(yscrollcommand = self.display_scrollbar.set)
         pass
 
 
@@ -248,7 +256,7 @@ class Demo:
             
         # Overwrite existing array
         self.array = new_array
-        self.step = 0
+        self.step_count = 0
         self.max_power = find_max_power(self.array)
         self.display_container.destroy()
         self.build_display_container()
@@ -280,8 +288,6 @@ class Demo:
                 width = width,
                 height = ELEMENT_HEIGHT,
                 label = label,
-                dash = False,
-                highlighted = True,
                 )
             current_position += width + GAP_HORIZONTAL
 
@@ -306,9 +312,9 @@ class Demo:
                 width = ELEMENT_WIDTH_PER_DIGIT
                 label = get_digit(element, 10 ** (power), RADIX)
                 label_parameters = {'highlighted' : False}
-                if (power + 1 == self.step):
+                if (power + 1 == self.step_count):
                     label_parameters['highlighted'] = True
-                    label_parameters['background_colour'] = DIGIT_COLOUR[label]
+                    label_parameters['background_colour'] = DIGIT_HIGHLIGHT[label]
                 self.draw_rectangle_with_label(
                     canvas = canvas, 
                     horizontal_pos = current_position,
@@ -316,7 +322,6 @@ class Demo:
                     width = width,
                     height = ELEMENT_HEIGHT,
                     label = label,
-                    dash = True,
                     **label_parameters
                     )
                 current_position += width
@@ -342,47 +347,48 @@ class Demo:
         Returns:
             Nothing
         '''
-        # List of ptional parameters and default value:
+        # List of optional parameters and default value:
         dash = False
         highlighted = False
-        background_colour = ELEMENT_BACKGROUND_COLOUR
+        if self.step_count == 0:
+            config_rect = CONFIG_RECT['original']
+            config_text = CONFIG_TEXT['original']
+        elif self.is_sorted():
+            config_rect = CONFIG_RECT['sorted']
+            config_text = CONFIG_TEXT['sorted']
+        else:
+            config_rect = CONFIG_RECT['plain']
+            config_text = CONFIG_TEXT['plain']
 
         # Set optional parameters
         for parameter, value in parameters.items():
-            if parameter == 'dash':
-                dash = value
-            elif parameter == 'highlighted':
+            if parameter == 'highlighted':
                 highlighted = value
             elif parameter == 'background_colour':
                 background_colour = value
             else:
-                 raise Exception("Unknown parameter in draw_rectangle_with_label().")
+                 raise NameError("Unknown parameter in draw_rectangle_with_label().")
 
         if highlighted:
-            config_digit_rect = CONFIG_DIGIT_RECT_HIGHLIGHT.copy()
-            config_digit_rect['fill'] = background_colour
-            config_digit_text = CONFIG_DIGIT_TEXT_HIGHLIGHT.copy()
-        else:
-            config_digit_rect = CONFIG_DIGIT_RECT_PLAIN.copy()
-            config_digit_text = CONFIG_DIGIT_TEXT_PLAIN.copy()
-        if dash:
-            config_digit_rect['dash'] = DASH_PARAMETER
+            config_rect = CONFIG_RECT['highlighted'].copy()
+            config_rect['fill'] = background_colour
+            config_text = CONFIG_TEXT['highlighted']
 
-        # Draw rectangle to represent element
+        # Draw rectangle to represent element or digit
         canvas.create_rectangle(
             horizontal_pos, # pixels, horizontal distance to left edge
             vertical_pos, # pixels, vertical distance to upper edge
             horizontal_pos + width, # pixels, horizontal distance to right edge
             vertical_pos + height, # pixels, vertical distance to lower edge
-            **config_digit_rect,
+            **config_rect,
         )
 
-        # Label rectangle with element value
+        # Label rectangle with element or digit
         canvas.create_text(
             horizontal_pos + width * 0.5, # pixels, horizontal distance to centre of text
             vertical_pos + height * 0.5, # pixels, vertical distance to centre of text
             text = label,
-            **config_digit_text,
+            **config_text,
         )
 
     
@@ -400,13 +406,31 @@ class Demo:
         Returns:
             Nothing
         '''
-        power = self.step
-        self.step += 1
+        power = self.step_count
+        self.step_count += 1
         place_value = 10 ** power
         self.array = counting_sort(self.array, place_value)
         self.build_individual_step_frame()
     
-        if self.step > self.max_power:
+        if self.is_sorted():
             self.button_next.config(state = 'disabled')
+
+
+    def is_sorted(self):
+        '''
+        Function Name: is_sorted
+            Check if the array is sorted according to the step count
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            bool, True if sorting is complete; False otherwise
+        '''
+        # Step count after final step implies array is sorted 
+        return self.step_count > (self.max_power + 1)
 
 
