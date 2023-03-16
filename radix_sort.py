@@ -1,16 +1,17 @@
 '''
 CS 5008 - Radix Sort Demonstration
-
-Demonstration of Radix Sort
-Logic of radix sort algorithm
+----------------------------------
+radix sort module:
+    This module contains logic of radix sort algorithm
 
 HUI, Macarious Kin Fung
 LI, Yunke
 ZHANG, Yufei
 '''
 
-RADIX = 10
 from element import get_power
+
+RADIX = 10 # Use base 10 (decimal system)
 
 def find_max_power(array):
     '''

@@ -1,7 +1,7 @@
 '''
 CS 5008 - Radix Sort Demonstration
 ----------------------------------
-Demo class:
+GraphicalUserInterface class:
     This class provides a graphical interface for a demonstration of radix sort.
 
 HUI, Macarious Kin Fung
@@ -13,17 +13,11 @@ import tkinter
 from tkinter import ttk
 from random import randint
 from element import get_digit
-from graphical_user_interface import GraphicalUserInterface
 from radix_sort import RADIX
 from radix_sort import counting_sort
 from radix_sort import find_max_power
 
-# For array construction and sorting logic
-VALUE_MIN = 0
-VALUE_MAX = 99999
-ELEMENT_COUNT = 10
 
-# For graphical demonstration
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
 ELEMENT_WIDTH_PER_DIGIT = 15
@@ -81,7 +75,7 @@ CONFIG_GRID = {
     'pady' : 2,
 }
 
-class Demo:
+class GraphicalUserInterface:
     '''
     This class provides a graphical interface for a demonstration of radix sort.
     '''
@@ -89,7 +83,7 @@ class Demo:
     def __init__(self, root, array):
         '''
         Function Name: __init__
-            Constructor for the Demo class.
+            Constructor for the GraphicalUserInterface class.
         
         Parameters:
             root -- Tk, root node for tkinter
@@ -101,7 +95,34 @@ class Demo:
         Returns:
             Nothing
         '''
-        self.gui = GraphicalUserInterface(root, array)
+        self.root = root
+        self.array = array
+        self.step_count = 0
+        self.max_power = find_max_power(self.array)
+        self.element_count = len(array)
+
+        self.build_gui_window()
+
+
+    def build_gui_window(self):
+        '''
+        Function Name: build_gui_window
+            Building the GUI window.
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.root.title(TITLE)
+        self.root.configure(bg = BACKGROUND_COLOUR)
+        self.root.resizable(False, False)
+        self.build_control_container()
+        self.build_display_container()
 
 
     def build_control_container(self):
@@ -197,7 +218,7 @@ class Demo:
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create canvas widget to draw the array
-        width = ELEMENT_COUNT * (GAP_HORIZONTAL + ELEMENT_WIDTH_PER_DIGIT * (self.max_power + 1)) + GAP_HORIZONTAL
+        width = self.element_count * (GAP_HORIZONTAL + ELEMENT_WIDTH_PER_DIGIT * (self.max_power + 1)) + GAP_HORIZONTAL
         height = ELEMENT_HEIGHT + 2 * GAP_VERTICAL
         canvas_individual_step = tkinter.Canvas(individual_step_frame, width = width, height = height, **CONFIG_CANVAS)
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
@@ -224,34 +245,6 @@ class Demo:
         # self.display_scrollbar.pack(side = 'right', fill = 'y')
         # self.step_counts_canvas.config(yscrollcommand = self.display_scrollbar.set)
         pass
-
-
-    def generate_new_array(self):
-        '''
-        Function Name: generate_array
-            Generate a randomized array
-        
-        Parameters:
-            size -- int, the number of elements in the array
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            Nothing
-        '''
-        new_array = []
-        for _ in range(ELEMENT_COUNT):
-            new_element = randint(VALUE_MIN, VALUE_MAX)
-            new_array.append(new_element)
-            
-        # Overwrite existing array
-        self.array = new_array
-        self.step_count = 0
-        self.max_power = find_max_power(self.array)
-        self.display_container.destroy()
-        self.build_display_container()
-        self.button_next.config(state = 'normal')
 
 
     def display_array(self, canvas):
@@ -317,6 +310,16 @@ class Demo:
                     )
                 current_position += width
             current_position += GAP_HORIZONTAL
+
+
+    def display_new_array(self, array):
+        self.array = new_array
+        self.step_count = 0
+        self.max_power = find_max_power(self.array)
+        self.display_container.destroy()
+        self.build_display_container()
+        self.button_next.config(state = 'normal')
+
             
 
     def draw_rectangle_with_label(self, canvas, horizontal_pos, vertical_pos, width, height, label, **parameters):
@@ -339,7 +342,6 @@ class Demo:
             Nothing
         '''
         # List of optional parameters and default value:
-        dash = False
         highlighted = False
         if self.step_count == 0:
             config_rect = CONFIG_RECT['original']
@@ -358,7 +360,7 @@ class Demo:
             elif parameter == 'background_colour':
                 background_colour = value
             else:
-                 raise NameError("Unknown parameter in draw_rectangle_with_label().")
+                raise NameError("Unknown parameter in draw_rectangle_with_label().")
 
         if highlighted:
             config_rect = CONFIG_RECT['highlighted'].copy()
@@ -382,46 +384,5 @@ class Demo:
             **config_text,
         )
 
-    
-    def continue_radix_sort(self):
-        '''
-        Function Name: continue_radix_sort
-            Execute and display one more step of radix sort
-        
-        Parameters:
-            None
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            Nothing
-        '''
-        power = self.step_count
-        self.step_count += 1
-        place_value = 10 ** power
-        self.array = counting_sort(self.array, place_value)
-        self.build_individual_step_frame()
-    
-        if self.is_sorted():
-            self.button_next.config(state = 'disabled')
-
-
-    def is_sorted(self):
-        '''
-        Function Name: is_sorted
-            Check if the array is sorted according to the step count
-        
-        Parameters:
-            None
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            bool, True if sorting is complete; False otherwise
-        '''
-        # Step count after final step implies array is sorted 
-        return self.step_count > (self.max_power + 1)
 
 
