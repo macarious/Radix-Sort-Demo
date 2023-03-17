@@ -96,6 +96,8 @@ class GraphicalUserInterface:
         self.root = root
         self.controller = controller
         self.build_gui_window(radix_sort)
+        self.step_display_count = 0
+        self.step_display_header = "Original Array"
 
 
     def build_gui_window(self, radix_sort):
@@ -264,7 +266,7 @@ class GraphicalUserInterface:
         is_sorted = radix_sort.is_sorted()
         
         if step_count == 4:
-            self._fix_steps_canvas_size()
+            self._fix_steps_canvas_size() # Is not implemented at the moment
 
         # Create a frame for an individual step
         individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
@@ -298,19 +300,6 @@ class GraphicalUserInterface:
 
         else:
             self._draw_array_detail(canvas_individual_step, radix_sort)
-
-
-    def _fix_steps_canvas_size(self):
-        # width = self.step_counts_canvas.winfo_width()
-        # height = self.step_counts_canvas.winfo_height()
-        # print(width)
-        # print(height)
-        # self.step_counts_canvas.config(width = width, height = height)
-        # self.step_counts_canvas.update()
-        # self.display_scrollbar = tkinter.Scrollbar(self.display_container, orient = 'vertical', command = self.step_counts_canvas.yview)
-        # self.display_scrollbar.pack(side = 'right', fill = 'y')
-        # self.step_counts_canvas.config(yscrollcommand = self.display_scrollbar.set)
-        pass
 
 
     def _draw_array(self, canvas, radix_sort):
@@ -444,6 +433,45 @@ class GraphicalUserInterface:
             text = label,
             **config_text,
         )
+
+
+    # Fix window size and add scroll bar
+    # Does not work; will be implemented in the future
+    def _fix_steps_canvas_size(self):
+        # width = self.step_counts_canvas.winfo_width()
+        # height = self.step_counts_canvas.winfo_height()
+        # print(width)
+        # print(height)
+        # self.step_counts_canvas.config(width = width, height = height)
+        # self.step_counts_canvas.update()
+        # self.display_scrollbar = tkinter.Scrollbar(self.display_container, orient = 'vertical', command = self.step_counts_canvas.yview)
+        # self.display_scrollbar.pack(side = 'right', fill = 'y')
+        # self.step_counts_canvas.config(yscrollcommand = self.display_scrollbar.set)
+        pass
+
+
+    # Not used at the moment; will be implemented for displaying finer steps
+    def _update_step_display_header(self, step_count, sub_step):
+        '''
+        Function Name: _update_step_display_header
+            _summary_
+        
+        Parameters:
+            step_count -- int, current step number
+            sub_step -- str, name of sub-step, (ex. A, B, C, ...)
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        if step_count == 0:
+            self.step_display_count = 0
+            self.step_display_header = "Original Array"
+        else:
+            self.step_display_count += 1
+            self.step_display_header = f"Step: {step_count}-{sub_step}"
 
 
 
