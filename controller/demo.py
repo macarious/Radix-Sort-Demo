@@ -38,7 +38,26 @@ class Demo:
             Nothing
         '''
         self.radix_sort = RadixSort(array, 10)
-        self.gui = GraphicalUserInterface(root, self, self.radix_sort)
+        self.gui = GraphicalUserInterface(root, self)
+        self.initialize_gui()
+
+
+    def initialize_gui(self):
+        '''
+        Function Name: initialize_gui
+            Pass current state of radix sort to gui, and build initial display
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.gui.build_gui_window()
 
 
     def generate_new_array(self):
@@ -58,7 +77,10 @@ class Demo:
         array_size = ARRAY_SIZE # FUTURE: implement sliders in gui for customization
         max_digit = MAX_DIGIT # FUTURE: implement sliders in gui for customization
         self.radix_sort.generate_new_array(array_size, max_digit)
-        self.gui.reset_display_container(self.radix_sort)
+
+        # Pass current state of radix sort to view, and display current step.
+        self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.gui.reset_display_container()
 
     
     def continue_radix_sort(self):
@@ -79,7 +101,10 @@ class Demo:
         place_value = 10 ** power
         self.radix_sort.increment_step_count()
         self.radix_sort.counting_sort(place_value)
-        self.gui.display_step(self.radix_sort)
+
+        # Pass current state of radix sort to view, and display current step.
+        self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.gui.display_step()
     
         if self.radix_sort.is_sorted():
             self.gui.disable_next_button()
