@@ -16,6 +16,7 @@ from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
+MAX_SUBSTEP = 2
 ELEMENT_WIDTH_PER_DIGIT = 15
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
@@ -26,7 +27,7 @@ CONFIG_CANVAS = {
     'background' : 'gray40',
 }
 THEME_COLOUR = {
-    'original' : 'tomato',
+    'original' : 'red2',
     'sorted' : 'SeaGreen1',
     'plain' : 'gray20',
     'highlighted' : 'gray90',
@@ -160,13 +161,13 @@ class GraphicalUserInterface:
         self.enable_next_button()
 
 
-    def display_step(self):
+    def display_step(self, substep):
         '''
         Function Name: show_intermediate_step
             Display an intermediate step
         
         Parameters:
-            None
+            substep -- int, current substep starting at 0
         
         Raises:
             Nothing
@@ -174,7 +175,7 @@ class GraphicalUserInterface:
         Returns:
             Nothing
         '''
-        self._build_individual_step_frame()
+        self._build_individual_step_frame(substep)
 
     
     def enable_next_button(self):
@@ -263,16 +264,16 @@ class GraphicalUserInterface:
         self.display_container.grid(column = 0, row = 1, **CONFIG_GRID)
         self.step_counts_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME)
         self.step_counts_canvas.pack(side = 'left', fill = 'y')
-        self._build_individual_step_frame()
+        self._build_individual_step_frame(0)
 
 
-    def _build_individual_step_frame(self):
+    def _build_individual_step_frame(self, substep):
         '''
         Function Name: build_step_frame
             Build a frame which displays the current step
         
         Parameters:
-            None
+            substep -- int, current substep starting at 0
         
         Raises:
             Nothing
@@ -280,13 +281,19 @@ class GraphicalUserInterface:
         Returns:
             Nothing
         '''
-        
+        self.substep = substep
         if self.step_count == 4:
             self._fix_steps_canvas_size() # Is not implemented at the moment
 
         # Create a frame for an individual step
+        if self.step_count == 0:
+            frame_index = 0
+        elif self.step_count == self.max_power + 2:
+            frame_index = MAX_SUBSTEP + 1
+        else:
+            frame_index = substep + 1
         individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
-        individual_step_frame.grid(column = 0, row = self.step_count, **CONFIG_GRID)
+        individual_step_frame.grid(column = 0, row = frame_index, **CONFIG_GRID)
 
         # Create labels for displaying headers
         if self.step_count == 0:
@@ -298,7 +305,7 @@ class GraphicalUserInterface:
             font_colour = THEME_COLOUR['sorted']
 
         else:
-            header = f"Array at Step {self.step_count}"
+            header = f"Array at Step {self.step_count - 1}-{self.substep}"
             font_colour = THEME_COLOUR['plain']
 
         label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
@@ -465,7 +472,7 @@ class GraphicalUserInterface:
     def _update_step_display_header(self, step_count, sub_step):
         '''
         Function Name: _update_step_display_header
-            _summary_
+            Update the display header per the current sub step.
         
         Parameters:
             step_count -- int, current step number

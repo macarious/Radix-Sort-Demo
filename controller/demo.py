@@ -16,6 +16,7 @@ from model.radix_sort import RadixSort
 
 ARRAY_SIZE = 10 # FUTURE: implement sliders in gui for customization
 MAX_DIGIT = 5 # FUTURE: implement sliders in gui for customization
+MAX_SUBSTEP = 2
 
 class Demo:
     '''
@@ -99,12 +100,16 @@ class Demo:
         '''
         power = self.radix_sort.get_step_count()
         place_value = 10 ** power
+
+        # Display state of radix sort before counting sort.
         self.radix_sort.increment_step_count()
+        self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.gui.display_step(0)
         self.radix_sort.counting_sort(place_value)
 
         # Pass current state of radix sort to view, and display current step.
         self.gui.set_radix_sort_parameters(self.radix_sort)
-        self.gui.display_step()
+        self.gui.display_step(1)
     
         if self.radix_sort.is_sorted():
             self.gui.disable_next_button()
