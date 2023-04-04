@@ -17,29 +17,29 @@ from model.element import get_digit
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
 MAX_SUBSTEP = 2
-ELEMENT_WIDTH_PER_DIGIT = 15
+ELEMENT_WIDTH_PER_DIGIT = 20
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
 GAP_VERTICAL = 10
 DASH_PARAMETER = (4, 4)
 CONFIG_CANVAS = {
     'highlightthickness' : 0,
-    'background' : 'gray40',
+    'background' : 'gray20',
 }
 THEME_COLOUR = {
     'original' : 'red2',
     'sorted' : 'SeaGreen1',
-    'plain' : 'gray20',
+    'plain' : 'gray90',
     'highlighted' : 'gray90',
 }
 CONFIG_FRAME = {
-    'background' : 'gray40',
+    'background' : 'gray20',
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
 }
 CONFIG_HEADER = {
     'anchor' : 'w',
-    'background' : 'gray40',
+    'background' : 'gray20',
     'font' : ('Calibri', 16, 'bold'),
 }
 CONFIG_TEXT = {
@@ -49,9 +49,9 @@ CONFIG_TEXT = {
     'highlighted' : {'fill' : THEME_COLOUR['highlighted'], 'font' : ('Calibri', 14, 'bold'),},
 }
 CONFIG_RECT = {
-    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray30', 'width' : '2',},
-    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray30', 'width' : '2',},
-    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray50', 'width' : '1',},
+    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray10', 'width' : '2',},
+    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray10', 'width' : '2',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray30', 'width' : '1',},
     'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
 }
 DIGIT_HIGHLIGHT = [
@@ -97,6 +97,7 @@ class GraphicalUserInterface:
         self.controller = controller
         self.step_display_count = 0
         self.step_display_header = "Original Array"
+        self.list_digit_counter_array = []
 
 
     def set_radix_sort_parameters(self, radix_sort):
@@ -119,6 +120,7 @@ class GraphicalUserInterface:
         self.is_sorted = radix_sort.is_sorted()
         self.radix = radix_sort.get_radix()
         self.array = radix_sort.get_array()
+        self.list_digit_counter_array = radix_sort.get_list_digit_counter()
 
 
     def build_gui_window(self):
@@ -318,7 +320,10 @@ class GraphicalUserInterface:
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if self.step_count == 0 or self.is_sorted:
+        if (self.substep != 0) or (self.substep != MAX_SUBSTEP + 1):
+            self._draw_digit_counter_array(canvas_individual_step)
+
+        elif self.step_count == 0 or self.is_sorted:
             self._draw_array(canvas_individual_step)
 
         else:
@@ -377,6 +382,41 @@ class GraphicalUserInterface:
                 if (power + 1 == self.step_count):
                     label_parameters['highlighted'] = True
                     label_parameters['background_colour'] = DIGIT_HIGHLIGHT[label]
+                self._draw_rectangle_with_label(
+                    canvas = canvas,
+                    horizontal_pos = current_position,
+                    vertical_pos = GAP_VERTICAL,
+                    width = width,
+                    height = ELEMENT_HEIGHT,
+                    label = label,
+                    **label_parameters
+                    )
+                current_position += width
+            current_position += GAP_HORIZONTAL
+
+    
+    def _draw_digit_counter_array(self, canvas):
+        '''
+        Function Name: _draw_digit_counter_array
+            Display the array with highlighed digits on canvas
+        
+        Parameters:
+            canvas -- Canvas, widget in tkinter use to display the array
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        current_position = GAP_HORIZONTAL # pixels, horizontal distance to left edge
+        for list in self.list_digit_counter_array:
+            for digit in list:
+                width = ELEMENT_WIDTH_PER_DIGIT * 3 
+                label = digit
+                label_parameters = {}
+                label_parameters['highlighted'] = False
+                label_parameters['background_colour'] = DIGIT_HIGHLIGHT[label]
                 self._draw_rectangle_with_label(
                     canvas = canvas,
                     horizontal_pos = current_position,
@@ -469,14 +509,14 @@ class GraphicalUserInterface:
 
 
     # Not used at the moment; will be implemented for displaying finer steps
-    def _update_step_display_header(self, step_count, sub_step):
+    def _update_step_display_header(self, step_count, substep):
         '''
         Function Name: _update_step_display_header
             Update the display header per the current sub step.
         
         Parameters:
             step_count -- int, current step number
-            sub_step -- str, name of sub-step, (ex. A, B, C, ...)
+            substep -- str, name of sub-step, (ex. A, B, C, ...)
         
         Raises:
             Nothing
@@ -489,7 +529,7 @@ class GraphicalUserInterface:
             self.step_display_header = "Original Array"
         else:
             self.step_display_count += 1
-            self.step_display_header = f"Step: {step_count}-{sub_step}"
+            self.step_display_header = f"Step: {step_count}-{substep}"
 
 
 
