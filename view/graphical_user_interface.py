@@ -288,7 +288,7 @@ class GraphicalUserInterface:
             self._fix_steps_canvas_size() # Is not implemented at the moment
 
         # Create a frame for an individual step
-        if self.step_count == 0:
+        if self.step_count == 0 and substep == 0:
             frame_index = 0
         elif self.step_count == self.max_power + 2:
             frame_index = MAX_SUBSTEP + 1
@@ -298,7 +298,7 @@ class GraphicalUserInterface:
         individual_step_frame.grid(column = 0, row = frame_index, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        if self.step_count == 0:
+        if self.step_count == 0 and substep == 0:
             header = "Original Array"
             font_colour = THEME_COLOUR['original']
         
@@ -320,7 +320,7 @@ class GraphicalUserInterface:
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if (self.substep != 0) or (self.substep != MAX_SUBSTEP + 1):
+        if (self.substep != 0) and (self.substep != MAX_SUBSTEP + 1):
             self._draw_digit_counter_array(canvas_individual_step)
 
         elif self.step_count == 0 or self.is_sorted:
@@ -412,7 +412,7 @@ class GraphicalUserInterface:
         current_position = GAP_HORIZONTAL # pixels, horizontal distance to left edge
         for list in self.list_digit_counter_array:
             for digit in list:
-                width = ELEMENT_WIDTH_PER_DIGIT * 3 
+                width = ELEMENT_WIDTH_PER_DIGIT * 3
                 label = digit
                 label_parameters = {}
                 label_parameters['highlighted'] = False
