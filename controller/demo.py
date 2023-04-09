@@ -107,7 +107,6 @@ class Demo:
         self.gui.display_step(1)
 
         # Pass current state of radix sort to view, and display current step.
-        self.gui.display_step(2)
     
         if self.radix_sort.is_sorted():
             self.gui.display_step(3)
