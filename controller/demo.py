@@ -15,7 +15,7 @@ from model.radix_sort import RadixSort
 
 
 ARRAY_SIZE = 10 # FUTURE: implement sliders in gui for customization
-MAX_DIGIT = 5 # FUTURE: implement sliders in gui for customization
+MAX_DIGIT = 4 # FUTURE: implement sliders in gui for customization
 RADIX = 10
 
 class Demo:
