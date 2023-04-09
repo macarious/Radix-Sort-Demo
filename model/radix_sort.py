@@ -175,7 +175,7 @@ class RadixSort:
         '''
         new_array = []
         for _ in range(array_size):
-            new_element = randint(0, (10 ** max_digit - 1))
+            new_element = randint(0, (10 ** (max_digit + 1) - 1))
             new_array.append(new_element)
         self.array = new_array
         self.step_count = 0
