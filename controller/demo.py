@@ -16,7 +16,6 @@ from model.radix_sort import RadixSort
 
 ARRAY_SIZE = 10 # FUTURE: implement sliders in gui for customization
 MAX_DIGIT = 5 # FUTURE: implement sliders in gui for customization
-RADIX = 10
 
 class Demo:
     '''
@@ -38,7 +37,7 @@ class Demo:
         Returns:
             Nothing
         '''
-        self.radix_sort = RadixSort(array, RADIX)
+        self.radix_sort = RadixSort(array, 10)
         self.gui = GraphicalUserInterface(root, self)
         self.initialize_gui()
         self.radix = RADIX
@@ -100,7 +99,7 @@ class Demo:
             Nothing
         '''
         power = self.radix_sort.get_step_count()
-        place_value = RADIX ** power
+        place_value = 10 ** power
         self.radix_sort.increment_step_count()
         self.radix_sort.counting_sort(place_value)
         self.gui.set_radix_sort_parameters(self.radix_sort)
