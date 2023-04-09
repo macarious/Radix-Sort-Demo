@@ -16,29 +16,29 @@ from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
-ELEMENT_WIDTH_PER_DIGIT = 15
+ELEMENT_WIDTH_PER_DIGIT = 25
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
 GAP_VERTICAL = 10
 DASH_PARAMETER = (4, 4)
 CONFIG_CANVAS = {
     'highlightthickness' : 0,
-    'background' : 'gray40',
+    'background' : 'gray20',
 }
 THEME_COLOUR = {
-    'original' : 'tomato',
+    'original' : 'red2',
     'sorted' : 'SeaGreen1',
-    'plain' : 'gray20',
-    'highlighted' : 'gray90',
+    'plain' : 'gray80',
+    'highlighted' : 'gray80',
 }
 CONFIG_FRAME = {
-    'background' : 'gray40',
+    'background' : 'gray20',
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
 }
 CONFIG_HEADER = {
     'anchor' : 'w',
-    'background' : 'gray40',
+    'background' : 'gray20',
     'font' : ('Calibri', 16, 'bold'),
 }
 CONFIG_TEXT = {
@@ -50,7 +50,7 @@ CONFIG_TEXT = {
 CONFIG_RECT = {
     'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray30', 'width' : '2',},
     'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray30', 'width' : '2',},
-    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray50', 'width' : '1',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray40', 'width' : '1',},
     'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
 }
 DIGIT_HIGHLIGHT = [
@@ -118,6 +118,7 @@ class GraphicalUserInterface:
         self.is_sorted = radix_sort.is_sorted()
         self.radix = radix_sort.get_radix()
         self.array = radix_sort.get_array()
+        self.counter_array = radix_sort.get_counter_array()
 
 
     def build_gui_window(self):
@@ -280,25 +281,31 @@ class GraphicalUserInterface:
         Returns:
             Nothing
         '''
-        
-        if self.step_count == 4:
-            self._fix_steps_canvas_size() # Is not implemented at the moment
+        frame_pos = self.controller.get_current_frame_step()
 
         # Create a frame for an individual step
         individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
-        individual_step_frame.grid(column = 0, row = self.step_count, **CONFIG_GRID)
+        individual_step_frame.grid(column = 0, row = frame_pos, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        if self.step_count == 0:
+        if frame_pos == 0:
             header = "Original Array"
             font_colour = THEME_COLOUR['original']
         
-        elif self.is_sorted:
+        elif frame_pos == 4 and self.is_sorted:
             header = "Sorted Array"
             font_colour = THEME_COLOUR['sorted']
 
         else:
-            header = f"Array at Step {self.step_count}"
+            if frame_pos == 1:
+                subtext = "Before sort"
+
+            elif frame_pos == 3:
+                subtext = "After sort"
+
+            else:
+                subtext = self.controller.get_current_substep()
+            header = f"Array at Step {self.step_count} - {subtext}"
             font_colour = THEME_COLOUR['plain']
 
         label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
@@ -311,8 +318,11 @@ class GraphicalUserInterface:
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if self.step_count == 0 or self.is_sorted:
+        if (frame_pos == 0) or (frame_pos == 4):
             self._draw_array(canvas_individual_step)
+
+        elif (frame_pos == 2):
+            self._draw_array_counter(canvas_individual_step)
 
         else:
             self._draw_array_detail(canvas_individual_step)
@@ -345,6 +355,38 @@ class GraphicalUserInterface:
                 label = label,
                 )
             current_position += width + GAP_HORIZONTAL
+
+    
+    def _draw_array_counter(self, canvas):
+        '''
+        Function Name: _draw_array_counter
+            Display the counter array at a substep
+        
+        Parameters:
+            canvas -- Canvas, widget in tkinter use to display the array
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        current_position = GAP_HORIZONTAL # pixels, horizontal distance to left edge
+        list = self.counter_array[self.controller.get_current_substep()]
+        for i in range(len(list)):
+            width = ELEMENT_WIDTH_PER_DIGIT
+            label = list[i]
+            label_parameters = {'highlighted' : False}
+            self._draw_rectangle_with_label(
+                canvas = canvas,
+                horizontal_pos = current_position,
+                vertical_pos = GAP_VERTICAL,
+                width = width * 1.5,
+                height = ELEMENT_HEIGHT,
+                label = label,
+                **label_parameters
+                )
+            current_position += width * 2
 
     
     def _draw_array_detail(self, canvas):
@@ -404,10 +446,10 @@ class GraphicalUserInterface:
         '''
         # List of optional parameters and default value:
         highlighted = False
-        if self.step_count == 0:
+        if self.controller.get_current_frame_step() == 0:
             config_rect = CONFIG_RECT['original']
             config_text = CONFIG_TEXT['original']
-        elif self.is_sorted:
+        elif self.controller.get_current_frame_step() == 4:
             config_rect = CONFIG_RECT['sorted']
             config_text = CONFIG_TEXT['sorted']
         else:
@@ -444,45 +486,6 @@ class GraphicalUserInterface:
             text = label,
             **config_text,
         )
-
-
-    # Fix window size and add scroll bar
-    # Does not work; will be implemented in the future
-    def _fix_steps_canvas_size(self):
-        # width = self.step_counts_canvas.winfo_width()
-        # height = self.step_counts_canvas.winfo_height()
-        # print(width)
-        # print(height)
-        # self.step_counts_canvas.config(width = width, height = height)
-        # self.step_counts_canvas.update()
-        # self.display_scrollbar = tkinter.Scrollbar(self.display_container, orient = 'vertical', command = self.step_counts_canvas.yview)
-        # self.display_scrollbar.pack(side = 'right', fill = 'y')
-        # self.step_counts_canvas.config(yscrollcommand = self.display_scrollbar.set)
-        pass
-
-
-    # Not used at the moment; will be implemented for displaying finer steps
-    def _update_step_display_header(self, step_count, sub_step):
-        '''
-        Function Name: _update_step_display_header
-            _summary_
-        
-        Parameters:
-            step_count -- int, current step number
-            sub_step -- str, name of sub-step, (ex. A, B, C, ...)
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            Nothing
-        '''
-        if step_count == 0:
-            self.step_display_count = 0
-            self.step_display_header = "Original Array"
-        else:
-            self.step_display_count += 1
-            self.step_display_header = f"Step: {step_count}-{sub_step}"
 
 
 

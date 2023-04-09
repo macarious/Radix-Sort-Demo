@@ -15,7 +15,8 @@ from model.radix_sort import RadixSort
 
 
 ARRAY_SIZE = 10 # FUTURE: implement sliders in gui for customization
-MAX_DIGIT = 5 # FUTURE: implement sliders in gui for customization
+MAX_DIGIT = 4 # FUTURE: implement sliders in gui for customization
+RADIX = 10 # Default to base 10
 
 class Demo:
     '''
@@ -37,7 +38,17 @@ class Demo:
         Returns:
             Nothing
         '''
-        self.radix_sort = RadixSort(array, 10)
+        # 0 -- Original array (not used in counting_sort())
+        # 1 -- Unsorted array of current step
+        # 2 -- Counting array used for current step
+        # 3 -- Sorted array of current step
+        # 4 -- Final sorted array
+        self.current_frame_step = 0
+
+        # Substeps in frame 2 (from 0 to array length + 1)
+        self.current_substep = 0
+
+        self.radix_sort = RadixSort(array, RADIX)
         self.gui = GraphicalUserInterface(root, self)
         self.initialize_gui()
 
@@ -58,6 +69,40 @@ class Demo:
         '''
         self.gui.set_radix_sort_parameters(self.radix_sort)
         self.gui.build_gui_window()
+
+    
+    def get_current_frame_step(self):
+        '''
+        Function Name: get_current_substep
+            Returns the current frame step count
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            int, current frame step
+        '''
+        return self.current_frame_step
+
+    
+    def get_current_substep(self):
+        '''
+        Function Name: get_current_substep
+            Returns the current substep count
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            int, current substep
+        '''
+        return self.current_substep
 
 
     def generate_new_array(self):
@@ -80,6 +125,8 @@ class Demo:
 
         # Pass current state of radix sort to view, and display current step.
         self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.current_frame_step = 0
+        self.current_substep = 0
         self.gui.reset_display_container()
 
     
@@ -97,16 +144,46 @@ class Demo:
         Returns:
             Nothing
         '''
-        power = self.radix_sort.get_step_count()
-        place_value = 10 ** power
-        self.radix_sort.increment_step_count()
-        self.radix_sort.counting_sort(place_value)
+        # Automatically goes to frame_step 1 if it is in frame_step 0
+        if self.current_frame_step == 0:
+            self.current_frame_step = 1
 
-        # Pass current state of radix sort to view, and display current step.
-        self.gui.set_radix_sort_parameters(self.radix_sort)
-        self.gui.display_step()
+        # Display unsorted array.
+        if self.current_frame_step == 1:
+            self.radix_sort.increment_step_count()
+            self.gui.set_radix_sort_parameters(self.radix_sort)
+            print(f"step count {self.radix_sort.get_step_count()}")
+            print(f"max power {self.radix_sort.get_max_power()}")
+
+            self.gui.display_step()
+
+            # Perform counting sort.
+            step = self.radix_sort.get_step_count()
+            place_value = RADIX ** step # Step count corresponds to the current power
+            self.radix_sort.counting_sort(place_value)
+
+            # Update parameters.
+            self.gui.set_radix_sort_parameters(self.radix_sort)
+            self.current_frame_step = 2
+        
+        # Display counting array.
+        elif self.current_frame_step == 2:
+            self.gui.display_step()
+            self.current_frame_step = 3
+            self.gui.display_step()
+
+            # Goes back to frame_step 1 when all substeps are displayed
+            if self.current_substep > len(self.radix_sort.get_array()):
+                self.current_frame_step = 1
+                self.current_substep = 0
+
+            else: # Continue displaying the counting arrays
+                self.current_frame_step = 2
+                self.current_substep += 1
     
-        if self.radix_sort.is_sorted():
-            self.gui.disable_next_button()
+            if self.radix_sort.is_sorted():
+                self.current_frame_step = 4 # current_frame_step == 4
+                self.gui.display_step()
+                self.gui.disable_next_button()
 
 
