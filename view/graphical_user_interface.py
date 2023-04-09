@@ -16,29 +16,29 @@ from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
-ELEMENT_WIDTH_PER_DIGIT = 15
+ELEMENT_WIDTH_PER_DIGIT = 30
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
 GAP_VERTICAL = 10
 DASH_PARAMETER = (4, 4)
 CONFIG_CANVAS = {
     'highlightthickness' : 0,
-    'background' : 'gray40',
+    'background' : 'gray20',
 }
 THEME_COLOUR = {
     'original' : 'tomato',
     'sorted' : 'SeaGreen1',
-    'plain' : 'gray20',
+    'plain' : 'gray60',
     'highlighted' : 'gray90',
 }
 CONFIG_FRAME = {
-    'background' : 'gray40',
+    'background' : 'gray20',
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
 }
 CONFIG_HEADER = {
     'anchor' : 'w',
-    'background' : 'gray40',
+    'background' : 'gray20',
     'font' : ('Calibri', 16, 'bold'),
 }
 CONFIG_TEXT = {
@@ -50,7 +50,7 @@ CONFIG_TEXT = {
 CONFIG_RECT = {
     'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray30', 'width' : '2',},
     'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray30', 'width' : '2',},
-    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray50', 'width' : '1',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray30', 'width' : '1',},
     'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
 }
 DIGIT_HIGHLIGHT = [
