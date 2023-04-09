@@ -41,6 +41,7 @@ class Demo:
         self.radix_sort = RadixSort(array, RADIX)
         self.gui = GraphicalUserInterface(root, self)
         self.initialize_gui()
+        self.radix = RADIX
 
 
     def initialize_gui(self):
@@ -102,12 +103,14 @@ class Demo:
         place_value = RADIX ** power
         self.radix_sort.increment_step_count()
         self.radix_sort.counting_sort(place_value)
+        self.gui.set_radix_sort_parameters(self.radix_sort)
+        self.gui.display_step(1)
 
         # Pass current state of radix sort to view, and display current step.
-        self.gui.set_radix_sort_parameters(self.radix_sort)
-        self.gui.display_step()
+        self.gui.display_step(2)
     
         if self.radix_sort.is_sorted():
+            self.gui.display_step(3)
             self.gui.disable_next_button()
 
 
