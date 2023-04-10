@@ -16,29 +16,30 @@ from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
-ELEMENT_WIDTH_PER_DIGIT = 30
+ELEMENT_WIDTH_PER_DIGIT = 25
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
 GAP_VERTICAL = 10
 DASH_PARAMETER = (4, 4)
+BACKGROUND_COLOUR = 'gray10'
 CONFIG_CANVAS = {
     'highlightthickness' : 0,
-    'background' : 'gray20',
+    'background' : BACKGROUND_COLOUR,
 }
 THEME_COLOUR = {
-    'original' : 'tomato',
+    'original' : 'red2',
     'sorted' : 'SeaGreen1',
-    'plain' : 'gray60',
+    'plain' : 'gray70',
     'highlighted' : 'gray90',
 }
 CONFIG_FRAME = {
-    'background' : 'gray20',
+    'background' : BACKGROUND_COLOUR,
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
 }
 CONFIG_HEADER = {
     'anchor' : 'w',
-    'background' : 'gray20',
+    'background' : BACKGROUND_COLOUR,
     'font' : ('Calibri', 16, 'bold'),
 }
 CONFIG_TEXT = {
@@ -48,9 +49,9 @@ CONFIG_TEXT = {
     'highlighted' : {'fill' : THEME_COLOUR['highlighted'], 'font' : ('Calibri', 14, 'bold'),},
 }
 CONFIG_RECT = {
-    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray30', 'width' : '2',},
-    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray30', 'width' : '2',},
-    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray30', 'width' : '1',},
+    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray20', 'width' : '2',},
+    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray20', 'width' : '2',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray20', 'width' : '1',},
     'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
 }
 DIGIT_HIGHLIGHT = [
@@ -96,6 +97,7 @@ class GraphicalUserInterface:
         self.controller = controller
         self.step_display_count = 0
         self.step_display_header = "Original Array"
+        self.current_frame = 0
 
 
     def set_radix_sort_parameters(self, radix_sort):
@@ -166,7 +168,7 @@ class GraphicalUserInterface:
             Display an intermediate step
         
         Parameters:
-            None
+            current_frame -- int, the current frame number to be displayed in (starts at 0)
         
         Raises:
             Nothing
@@ -209,6 +211,40 @@ class GraphicalUserInterface:
             Nothing
         '''
         self.button_next.config(state = 'disabled')
+
+
+    def get_current_frame(self):
+        '''
+        Function Name: get_current_frame
+            Get the current frame number (starts at 0)
+        
+        Parameters:
+            None
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            int, frame index (row number) of current display frame
+        '''
+        return self.current_frame
+
+
+    def set_current_frame(self, frame_index):
+        '''
+        Function Name: set_current_frame
+            Updates the current frame number (starts at 0)
+        
+        Parameters:
+            frame_index -- int, row number of current frame
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.current_frame = frame_index
 
 
     def _build_control_container(self):
@@ -280,20 +316,19 @@ class GraphicalUserInterface:
         Returns:
             Nothing
         '''
-        
-        if self.step_count == 4:
-            self._fix_steps_canvas_size() # Is not implemented at the moment
-
         # Create a frame for an individual step
+        if self.step_count == self.max_power + 1:
+            self.current_frame = 3
+
         individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
-        individual_step_frame.grid(column = 0, row = self.step_count, **CONFIG_GRID)
+        individual_step_frame.grid(column = 0, row = self.current_frame, **CONFIG_GRID)
 
         # Create labels for displaying headers
-        if self.step_count == 0:
+        if self.current_frame == 0:
             header = "Original Array"
             font_colour = THEME_COLOUR['original']
         
-        elif self.is_sorted:
+        elif self.current_frame == 3:
             header = "Sorted Array"
             font_colour = THEME_COLOUR['sorted']
 
@@ -311,7 +346,7 @@ class GraphicalUserInterface:
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
-        if self.step_count == 0 or self.is_sorted:
+        if self.current_frame == 0 or self.current_frame == 3:
             self._draw_array(canvas_individual_step)
 
         else:
@@ -367,7 +402,7 @@ class GraphicalUserInterface:
                 width = ELEMENT_WIDTH_PER_DIGIT
                 label = get_digit(element, 10 ** (power), self.radix)
                 label_parameters = {'highlighted' : False}
-                if (power + 1 == self.step_count):
+                if (power == self.step_count):
                     label_parameters['highlighted'] = True
                     label_parameters['background_colour'] = DIGIT_HIGHLIGHT[label]
                 self._draw_rectangle_with_label(
@@ -404,10 +439,10 @@ class GraphicalUserInterface:
         '''
         # List of optional parameters and default value:
         highlighted = False
-        if self.step_count == 0:
+        if self.current_frame == 0:
             config_rect = CONFIG_RECT['original']
             config_text = CONFIG_TEXT['original']
-        elif self.is_sorted:
+        elif self.current_frame == 3:
             config_rect = CONFIG_RECT['sorted']
             config_text = CONFIG_TEXT['sorted']
         else:

@@ -41,6 +41,7 @@ class Demo:
         self.radix_sort = RadixSort(array, RADIX)
         self.gui = GraphicalUserInterface(root, self)
         self.initialize_gui()
+        self.gui.set_current_frame(0)
 
 
     def initialize_gui(self):
@@ -80,6 +81,7 @@ class Demo:
         self.radix_sort.generate_new_array(array_size, max_digit)
 
         # Pass current state of radix sort to view, and display current step.
+        self.gui.set_current_frame(0)
         self.gui.set_radix_sort_parameters(self.radix_sort)
         self.gui.reset_display_container()
 
@@ -98,16 +100,23 @@ class Demo:
         Returns:
             Nothing
         '''
-        power = self.radix_sort.get_step_count()
-        place_value = RADIX ** power
-        self.radix_sort.increment_step_count()
-        self.radix_sort.counting_sort(place_value)
+        current_frame = self.gui.get_current_frame()
 
-        # Pass current state of radix sort to view, and display current step.
-        self.gui.set_radix_sort_parameters(self.radix_sort)
-        self.gui.display_step()
-    
-        if self.radix_sort.is_sorted():
-            self.gui.disable_next_button()
+        if current_frame == 0 or current_frame == 2:
+            self.gui.set_current_frame(1)
+            self.gui.set_radix_sort_parameters(self.radix_sort)
+            self.gui.display_step()
+            power = self.radix_sort.get_step_count()
+            place_value = RADIX ** power
+            self.radix_sort.counting_sort(place_value)
 
+        else:
+            # Pass current state of radix sort to view, and display current step.
+            self.gui.set_current_frame(2)
+            self.gui.set_radix_sort_parameters(self.radix_sort)
+            self.gui.display_step()
+            self.radix_sort.increment_step_count()
+
+            if self.radix_sort.is_sorted():
+                self.gui.disable_next_button()
 
