@@ -16,7 +16,7 @@ from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20'
-ELEMENT_WIDTH_PER_DIGIT = 25
+ELEMENT_WIDTH_PER_DIGIT = 30
 ELEMENT_HEIGHT = 40
 GAP_HORIZONTAL = 20
 GAP_VERTICAL = 10
@@ -247,6 +247,25 @@ class GraphicalUserInterface:
         self.current_frame = frame_index
 
 
+    def _destroy_individual_frame(self, row):
+        '''
+        Function Name: destroy_frame_in_row
+            Destroy a child frame at specified row.
+        
+        Parameters:
+            row -- int, row number
+        
+        Raises:
+        
+        Returns:
+        '''
+        for child in self.step_counts_canvas.winfo_children():
+            # Check if the child widget is a frame and its grid row matches the given row
+            if isinstance(child, tkinter.Frame) and child.grid_info()["row"] == row:
+                child.destroy()
+                break
+
+
     def _build_control_container(self):
         '''
         Function Name: _build_control_container
@@ -317,6 +336,11 @@ class GraphicalUserInterface:
             Nothing
         '''
         # Create a frame for an individual step
+        
+            
+        if self.current_frame == 1 and self.step_count < self.max_power + 1:
+                self._destroy_individual_frame(2)
+
         if self.step_count == self.max_power + 1:
             self.current_frame = 3
 
@@ -338,7 +362,7 @@ class GraphicalUserInterface:
                 header = f"Array at Step {self.step_count} - before"
             
             else:
-                header = f"Array at Step {self.step_count} - before"
+                header = f"Array at Step {self.step_count} - after"
 
         label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)

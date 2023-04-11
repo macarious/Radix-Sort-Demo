@@ -14,7 +14,7 @@ from view.graphical_user_interface import GraphicalUserInterface
 from model.radix_sort import RadixSort
 
 
-ARRAY_SIZE = 10 # FUTURE: implement sliders in gui for customization
+ARRAY_SIZE = 6 # FUTURE: implement sliders in gui for customization
 MAX_DIGIT = 3 # FUTURE: implement sliders in gui for customization
 RADIX = 10
 
@@ -103,6 +103,7 @@ class Demo:
         current_frame = self.gui.get_current_frame()
 
         if current_frame == 0 or current_frame == 2:
+
             self.gui.set_current_frame(1)
             self.gui.set_radix_sort_parameters(self.radix_sort)
             self.gui.display_step()
