@@ -549,7 +549,7 @@ class GraphicalUserInterface:
                             child.delete(item)
                     canvas_width = child.winfo_width()
                     canvas_height = child.winfo_height()
-                    bg_rect = child.create_rectangle(0, 0, canvas_width, canvas_height, fill = colour, tags = 'background_rect')
+                    bg_rect = child.create_rectangle(-10, -10, canvas_width, canvas_height, fill = colour, tags = 'background_rect')
                     child.tag_lower(bg_rect)
 
                 else:
