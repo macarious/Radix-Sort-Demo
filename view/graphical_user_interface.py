@@ -15,44 +15,40 @@ from tkinter import ttk
 from model.element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
-BACKGROUND_COLOUR = 'gray20'
-ELEMENT_WIDTH_PER_DIGIT = 30
-ELEMENT_HEIGHT = 40
-GAP_HORIZONTAL = 20
-GAP_VERTICAL = 10
-DASH_PARAMETER = (4, 4)
-BACKGROUND_COLOUR = 'gray10'
+BACKGROUND_COLOUR = 'gray20' # Default background as 'gray20'
+ELEMENT_WIDTH_PER_DIGIT = 45
+ELEMENT_HEIGHT = 60
+GAP_HORIZONTAL = 30
+GAP_VERTICAL = 15
+DASH_PARAMETER = (6, 6)
 CONFIG_CANVAS = {
     'highlightthickness' : 0,
-    'background' : BACKGROUND_COLOUR,
 }
 THEME_COLOUR = {
     'original' : 'red2',
     'sorted' : 'SeaGreen1',
-    'plain' : 'gray70',
+    'plain' : 'gray50',
     'highlighted' : 'gray90',
 }
 CONFIG_FRAME = {
-    'background' : BACKGROUND_COLOUR,
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
 }
 CONFIG_HEADER = {
     'anchor' : 'w',
-    'background' : BACKGROUND_COLOUR,
-    'font' : ('Calibri', 16, 'bold'),
+    'font' : ('Calibri', 18, 'bold'),
 }
 CONFIG_TEXT = {
-    'original' : {'fill' : THEME_COLOUR['original'], 'font' : ('Calibri', 14, 'bold'),},
-    'sorted' : {'fill' : THEME_COLOUR['sorted'], 'font' : ('Calibri', 14, 'bold'),},
-    'plain' : {'fill' : THEME_COLOUR['plain'], 'font' : ('Calibri', 14, 'bold'),},
-    'highlighted' : {'fill' : THEME_COLOUR['highlighted'], 'font' : ('Calibri', 14, 'bold'),},
+    'original' : {'fill' : THEME_COLOUR['original'], 'font' : ('Calibri', 24, 'bold'),},
+    'sorted' : {'fill' : THEME_COLOUR['sorted'], 'font' : ('Calibri', 24, 'bold'),},
+    'plain' : {'fill' : THEME_COLOUR['plain'], 'font' : ('Calibri', 24, 'bold'),},
+    'highlighted' : {'fill' : THEME_COLOUR['highlighted'], 'font' : ('Calibri', 24, 'bold'),},
 }
 CONFIG_RECT = {
-    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray20', 'width' : '2',},
-    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray20', 'width' : '2',},
-    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray20', 'width' : '1',},
-    'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '2', 'dash' : (4, 4),},
+    'original' : {'outline' : THEME_COLOUR['original'], 'fill' : 'gray20', 'width' : '3',},
+    'sorted' : {'outline' : THEME_COLOUR['sorted'], 'fill' : 'gray20', 'width' : '3',},
+    'plain' : {'outline' : THEME_COLOUR['plain'], 'fill' : 'gray20', 'width' : '2',},
+    'highlighted' : {'outline' : THEME_COLOUR['highlighted'], 'width' : '3', 'dash' : DASH_PARAMETER,},
 }
 DIGIT_HIGHLIGHT = [
     'red2',
@@ -68,8 +64,8 @@ DIGIT_HIGHLIGHT = [
 ]
 CONFIG_GRID = {
     'sticky' : 'nsew',
-    'padx' : 2,
-    'pady' : 2,
+    'padx' : 3,
+    'pady' : 3,
 }
 
 
@@ -98,6 +94,7 @@ class GraphicalUserInterface:
         self.step_display_count = 0
         self.step_display_header = "Original Array"
         self.current_frame = 0
+        self.bg_colour = BACKGROUND_COLOUR
 
 
     def set_radix_sort_parameters(self, radix_sort):
@@ -281,7 +278,7 @@ class GraphicalUserInterface:
             Nothing
         '''
         # Create a frame for the buttons
-        self.control_container = tkinter.Frame(self.root, **CONFIG_FRAME)
+        self.control_container = tkinter.Frame(self.root, **CONFIG_FRAME, background = self.bg_colour)
         self.control_container.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create buttons to generate a new array
@@ -298,6 +295,11 @@ class GraphicalUserInterface:
                                            state = 'normal')
         self.button_next.grid(column = 1, row = 0, **CONFIG_GRID)
 
+        # Create button to toggle dark/light mode
+        self.button_mode = tkinter.Button(self.control_container,
+                                          text = "DARK/LIGHT MODE",
+                                          command = lambda: self._toggle_dark_light_mode(self.root, "white" if self.root.cget("bg") != "white" else "gray20"))
+        self.button_mode.grid(column = 2, row = 0, **CONFIG_GRID)
 
     def _build_display_container(self):
         '''
@@ -314,9 +316,9 @@ class GraphicalUserInterface:
             Nothing
         '''
         # Create a frame for the initial array
-        self.display_container = tkinter.Frame(self.root, **CONFIG_FRAME)
+        self.display_container = tkinter.Frame(self.root, **CONFIG_FRAME, background = self.bg_colour)
         self.display_container.grid(column = 0, row = 1, **CONFIG_GRID)
-        self.step_counts_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME)
+        self.step_counts_canvas = tkinter.Canvas(self.display_container, **CONFIG_FRAME, background = self.bg_colour)
         self.step_counts_canvas.pack(side = 'left', fill = 'y')
         self._build_individual_step_frame()
 
@@ -344,7 +346,7 @@ class GraphicalUserInterface:
         if self.step_count == self.max_power + 1:
             self.current_frame = 3
 
-        individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME)
+        individual_step_frame = tkinter.Frame(self.step_counts_canvas, **CONFIG_FRAME, background = self.bg_colour)
         individual_step_frame.grid(column = 0, row = self.current_frame, **CONFIG_GRID)
 
         # Create labels for displaying headers
@@ -357,20 +359,20 @@ class GraphicalUserInterface:
             font_colour = THEME_COLOUR['sorted']
 
         else:
-            font_colour = THEME_COLOUR['plain']
+            font_colour = 'gray80'
             if self.current_frame == 1:
-                header = f"Array at Step {self.step_count} - before"
+                header = f"Array at Step {self.step_count + 1} - before"
             
             else:
-                header = f"Array at Step {self.step_count} - after"
+                header = f"Array at Step {self.step_count + 1} - after"
 
-        label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
+        label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour, background = self.bg_colour)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create canvas widget to draw the array
         width = self.element_count * (GAP_HORIZONTAL + ELEMENT_WIDTH_PER_DIGIT * (self.max_power + 1)) + GAP_HORIZONTAL
         height = ELEMENT_HEIGHT + 2 * GAP_VERTICAL
-        canvas_individual_step = tkinter.Canvas(individual_step_frame, width = width, height = height, **CONFIG_CANVAS)
+        canvas_individual_step = tkinter.Canvas(individual_step_frame, width = width, height = height, **CONFIG_CANVAS, background = self.bg_colour)
         canvas_individual_step.grid(column = 0, row = 1, **CONFIG_GRID)
 
         # Draw the array on the canvas
@@ -507,6 +509,58 @@ class GraphicalUserInterface:
             text = label,
             **config_text,
         )
+
+
+    def _toggle_dark_light_mode(self, window, colour):
+        '''
+        Function Name: _toggle_dark_light_mode
+            Change the colour of the window and all its child widgets
+        
+        Parameters:
+            window -- Tk, root node for tkinter
+            colour -- String, background colour to be changed
+        
+        Raises:
+            Nothing
+        
+        Returns:
+            Nothing
+        '''
+        self.bg_colour = colour
+        window.configure(bg = colour)
+
+        # Change background colour of all children widgets recursively
+        # Similar to traversing a tree
+        for child in window.winfo_children():
+            
+            # Do not change colour of Button
+            # Change colour of all other childs using 'bg' or 'background'
+            if child.winfo_class() != 'Button':
+
+                if child.winfo_class() == 'Canvas':
+                    # Create a new background rectangle "background_rect" item
+                    # Move the background rectangle item to the bottom of the canvas
+                    # Also, delete any existing background rectangle
+                    child.config(background = colour)
+                    canvas_items = child.find_all()
+                    for item in canvas_items:
+                        tags = child.gettags(item)
+                        if 'background_rect' in tags:
+                            child.delete(item)
+                    canvas_width = child.winfo_width()
+                    canvas_height = child.winfo_height()
+                    bg_rect = child.create_rectangle(0, 0, canvas_width, canvas_height, fill = colour, tags = 'background_rect')
+                    child.tag_lower(bg_rect)
+
+                else:
+                    child.configure(background = colour)
+
+            else:
+                continue
+
+
+            if child.winfo_children():
+                self._toggle_dark_light_mode(child, colour)
 
 
     # Fix window size and add scroll bar
