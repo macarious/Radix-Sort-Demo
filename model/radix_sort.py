@@ -199,7 +199,7 @@ class RadixSort:
         '''
         length = len(self.array)
         list_sorted = [0] * length # List sorted by counting sort by a specified digit
-        list_digit_counter = [0] * length # List to count the occurence of each digit
+        list_digit_counter = [0] * self.radix # List to count the occurence of each digit
 
         # Count the number of occurences of each digit
         for element in self.array:

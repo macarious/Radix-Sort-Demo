@@ -333,8 +333,12 @@ class GraphicalUserInterface:
             font_colour = THEME_COLOUR['sorted']
 
         else:
-            header = f"Array at Step {self.step_count}"
             font_colour = THEME_COLOUR['plain']
+            if self.current_frame == 1:
+                header = f"Array at Step {self.step_count} - before"
+            
+            else:
+                header = f"Array at Step {self.step_count} - before"
 
         label_individual_step = ttk.Label(individual_step_frame, text = header, **CONFIG_HEADER, foreground = font_colour)
         label_individual_step.grid(column = 0, row = 0, **CONFIG_GRID)
