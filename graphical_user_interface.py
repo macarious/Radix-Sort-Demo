@@ -30,6 +30,7 @@ THEME_COLOUR = {
     'plain' : 'gray50',
     'highlighted' : 'gray90',
 }
+BUTTON_FONT = ('Calibri', 12)
 CONFIG_FRAME = {
     'highlightthickness' : 1,
     'highlightcolor' : 'white',
@@ -284,21 +285,27 @@ class GraphicalUserInterface:
         # Create buttons to generate a new array
         self.button_generate = tkinter.Button(self.control_container,
                                            text = 'GENERATE NEW ARRAY',
+                                           font = BUTTON_FONT,
                                            command = self.controller.generate_new_array,
-                                           state = 'normal')
+                                           state = 'normal'
+                                           )
         self.button_generate.grid(column = 0, row = 0, **CONFIG_GRID)
 
         # Create buttons to continue to next step
         self.button_next = tkinter.Button(self.control_container,
                                            text = 'NEXT STEP',
+                                           font = BUTTON_FONT,
                                            command = self.controller.continue_radix_sort,
-                                           state = 'normal')
+                                           state = 'normal'
+                                           )
         self.button_next.grid(column = 1, row = 0, **CONFIG_GRID)
 
         # Create button to toggle dark/light mode
         self.button_mode = tkinter.Button(self.control_container,
                                           text = "DARK/LIGHT MODE",
-                                          command = lambda: self._toggle_dark_light_mode(self.root, "white" if self.root.cget("bg") != "white" else "gray20"))
+                                          font = BUTTON_FONT,
+                                          command = lambda: self._toggle_dark_light_mode(self.root, "white" if self.root.cget("bg") != "white" else "gray20")
+                                          )
         self.button_mode.grid(column = 2, row = 0, **CONFIG_GRID)
 
     def _build_display_container(self):

@@ -115,9 +115,11 @@ class Demo:
             # Pass current state of radix sort to view, and display current step.
             self.gui.set_current_frame(2)
             self.gui.set_radix_sort_parameters(self.radix_sort)
+
             self.gui.display_step()
             self.radix_sort.increment_step_count()
 
-            if self.radix_sort.is_sorted():
-                self.gui.disable_next_button()
+        current_frame = self.gui.get_current_frame()
+        if current_frame == 3:
+            self.gui.disable_next_button()
 
