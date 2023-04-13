@@ -12,7 +12,7 @@ ZHANG, Yufei
 import tkinter
 from tkinter import ttk
 
-from model.element import get_digit
+from element import get_digit
 
 TITLE = 'CS 5008 - Radix Sort Demo'
 BACKGROUND_COLOUR = 'gray20' # Default background as 'gray20'

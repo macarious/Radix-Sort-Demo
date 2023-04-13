@@ -9,9 +9,9 @@ LI, Yunke
 ZHANG, Yufei
 '''
 
-from model.element import get_digit
-from view.graphical_user_interface import GraphicalUserInterface
-from model.radix_sort import RadixSort
+from element import get_digit
+from graphical_user_interface import GraphicalUserInterface
+from radix_sort import RadixSort
 
 
 ARRAY_SIZE = 6 # FUTURE: implement sliders in gui for customization

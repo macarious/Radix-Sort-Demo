@@ -9,7 +9,7 @@ ZHANG, Yufei
 '''
 
 from tkinter import Tk
-from controller.demo import Demo
+from demo import Demo
 
 def main():
     '''

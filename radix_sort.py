@@ -11,7 +11,7 @@ ZHANG, Yufei
 
 from random import randint
 
-from model.element import get_power
+from element import get_power
 
 
 class RadixSort:
