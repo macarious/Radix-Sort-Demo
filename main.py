@@ -9,7 +9,7 @@ ZHANG, Yufei
 '''
 
 from tkinter import Tk
-from controller.demo import Demo
+from demo import Demo
 
 def main():
     '''
@@ -17,7 +17,8 @@ def main():
     '''
 
     # Sample array
-    array = [9590, 8521, 7522, 6523, 5554, 4465, 3586, 287, 81, 5]
+    array = [53, 89, 150, 36, 633, 233]
+    # array = [14, 13, 12]
     
     # Run demo
     root = Tk()

@@ -11,7 +11,7 @@ ZHANG, Yufei
 
 from random import randint
 
-from model.element import get_power
+from element import get_power
 
 
 class RadixSort:
@@ -39,7 +39,6 @@ class RadixSort:
         self.step_count = 0
         self.max_power = self._find_max_power()
         self.element_count = len(array)
-        self.list_digit_counter = [] # Keep track of digit_array at each step
     
 
     def get_array(self):
@@ -138,24 +137,6 @@ class RadixSort:
             int, number of element
         '''
         return self.element_count
-    
-    def get_list_digit_counter(self):
-        '''
-        Function Name: get_list_digit_counter
-            Get a list of digit_counter at each substep. digit_counter is
-            a list which tracks the frequency of each digit as well as the
-            cumulative frequency of each digit, used during counting sort.
-        
-        Parameters:
-            None
-        
-        Raises:
-            Nothing
-        
-        Returns:
-            list of list of int, list of the list of digits at each substep
-        '''
-        return self.list_digit_counter
 
 
     def is_sorted(self):
@@ -194,7 +175,7 @@ class RadixSort:
         '''
         new_array = []
         for _ in range(array_size):
-            new_element = randint(0, (10 ** (max_digit) - 1))
+            new_element = randint(0, (10 ** max_digit - 1))
             new_array.append(new_element)
         self.array = new_array
         self.step_count = 0
@@ -218,7 +199,7 @@ class RadixSort:
         '''
         length = len(self.array)
         list_sorted = [0] * length # List sorted by counting sort by a specified digit
-        list_digit_counter = [0] * length # List to count the occurence of each digit
+        list_digit_counter = [0] * self.radix # List to count the occurence of each digit
 
         # Count the number of occurences of each digit
         for element in self.array:
@@ -230,14 +211,11 @@ class RadixSort:
         for i in range(1, self.radix):
             list_digit_counter[i] += list_digit_counter[i - 1]
 
-        self.list_digit_counter.append(list_digit_counter.copy())
-
         # Construct the sorted array in reverse
         for i in range(length - 1, -1, -1):
             digit = (self.array[i] // place_value) % self.radix
             list_sorted[list_digit_counter[digit] - 1] = self.array[i]
             list_digit_counter[digit] -= 1
-            self.list_digit_counter.append(list_digit_counter.copy())
 
         self.array = list_sorted
 
