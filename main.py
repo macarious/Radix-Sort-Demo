@@ -1,15 +1,13 @@
 '''
-CS 5008 - Radix Sort Demonstration
+Radix Sort Demonstration
 ----------------------------------
-main -- Driver file running the Radix Sort Demo
+main.py -- Driver file running the Radix Sort Demo
 
 HUI, Macarious Kin Fung
-LI, Yunke
-ZHANG, Yufei
 '''
 
 from tkinter import Tk
-from demo import Demo
+from controller.demo import Demo
 
 def main():
     '''

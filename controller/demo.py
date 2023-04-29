@@ -1,17 +1,15 @@
 '''
-CS 5008 - Radix Sort Demonstration
+Radix Sort Demonstration
 ----------------------------------
 Demo class:
     This class acts as the controller of the radix sort demonstration.
 
 HUI, Macarious Kin Fung
-LI, Yunke
-ZHANG, Yufei
 '''
 
-from element import get_digit
-from graphical_user_interface import GraphicalUserInterface
-from radix_sort import RadixSort
+from model.element import get_digit
+from view.graphical_user_interface import GraphicalUserInterface
+from model.radix_sort import RadixSort
 
 
 ARRAY_SIZE = 6 # FUTURE: implement sliders in gui for customization

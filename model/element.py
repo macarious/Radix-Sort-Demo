@@ -1,12 +1,10 @@
 '''
-CS 5008 - Radix Sort Demonstration
+Radix Sort Demonstration
 ----------------------------------
 element module:
     This module contains logic associated with the elements to be sorted
 
 HUI, Macarious Kin Fung
-LI, Yunke
-ZHANG, Yufei
 '''
 
 def get_digit(element, place_value, radix):

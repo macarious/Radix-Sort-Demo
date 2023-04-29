@@ -1,17 +1,15 @@
 '''
-CS 5008 - Radix Sort Demonstration
+Radix Sort Demonstration
 ----------------------------------
 RadixSort class:
     This class represents the Radix Sort algorithm.
 
 HUI, Macarious Kin Fung
-LI, Yunke
-ZHANG, Yufei
 '''
 
 from random import randint
 
-from element import get_power
+from model.element import get_power
 
 
 class RadixSort:
